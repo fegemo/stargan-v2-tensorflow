@@ -1,0 +1,1 @@
+python main.py --dataset rpg-maker-xp  --phase train --img_size 64 --img_ch 4 --augment_flag False --iteration 1000 --ds_iter 1000 --print_freq 10 --save_freq 50
