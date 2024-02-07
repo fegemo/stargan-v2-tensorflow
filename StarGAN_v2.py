@@ -378,8 +378,8 @@ class StarGAN_v2():
             if np.mod(idx + 1, self.print_freq) == 0:
 
 
-                latent_fake_save_path = './{}/latent_{:07d}.jpg'.format(self.sample_dir, idx + 1)
-                ref_fake_save_path = './{}/ref_{:07d}.jpg'.format(self.sample_dir, idx + 1)
+                latent_fake_save_path = './{}/latent_{:07d}.png'.format(self.sample_dir, idx + 1)
+                ref_fake_save_path = './{}/ref_{:07d}.png'.format(self.sample_dir, idx + 1)
 
                 self.latent_canvas(x_real, latent_fake_save_path)
                 self.refer_canvas(x_real, x_ref, y_trg, ref_fake_save_path, img_num=5)
@@ -415,17 +415,16 @@ class StarGAN_v2():
         x_ref = x_ref[:ref_img_num]
         y_trg = y_trg[:ref_img_num]
 
-        canvas = PIL.Image.new('RGB', (self.img_size * (src_img_num + 1) + 10, self.img_size * (ref_img_num + 1) + 10),
-                               'white')
+        canvas = PIL.Image.new('RGBA', (self.img_size * (src_img_num + 1) + 10, self.img_size * (ref_img_num + 1) + 10))
 
         x_real_post = postprocess_images(x_real)
         x_ref_post = postprocess_images(x_ref)
 
         for col, src_image in enumerate(list(x_real_post)):
-            canvas.paste(PIL.Image.fromarray(np.uint8(src_image), 'RGB'), ((col + 1) * self.img_size + 10, 0))
+            canvas.paste(PIL.Image.fromarray(np.uint8(src_image), 'RGBA'), ((col + 1) * self.img_size + 10, 0))
 
         for row, dst_image in enumerate(list(x_ref_post)):
-            canvas.paste(PIL.Image.fromarray(np.uint8(dst_image), 'RGB'), (0, (row + 1) * self.img_size + 10))
+            canvas.paste(PIL.Image.fromarray(np.uint8(dst_image), 'RGBA'), (0, (row + 1) * self.img_size + 10))
 
             row_images = np.stack([dst_image] * src_img_num)
             row_images = preprocess_fit_train_image(row_images)
@@ -435,17 +434,17 @@ class StarGAN_v2():
             row_fake_images = postprocess_images(self.generator_ema([x_real, s_trg]))
 
             for col, image in enumerate(list(row_fake_images)):
-                canvas.paste(PIL.Image.fromarray(np.uint8(image), 'RGB'),
+                canvas.paste(PIL.Image.fromarray(np.uint8(image), 'RGBA'),
                              ((col + 1) * self.img_size + 10, (row + 1) * self.img_size + 10))
 
         canvas.save(path)
 
     def latent_canvas(self, x_real, path):
-        canvas = PIL.Image.new('RGB', (self.img_size * (self.num_domains + 1) + 10, self.img_size * self.num_style), 'white')
+        canvas = PIL.Image.new('RGBA', (self.img_size * (self.num_domains + 1) + 10, self.img_size * self.num_style))
 
         x_real = tf.expand_dims(x_real[0], axis=0)
         src_image = postprocess_images(x_real)[0]
-        canvas.paste(PIL.Image.fromarray(np.uint8(src_image), 'RGB'), (0, 0))
+        canvas.paste(PIL.Image.fromarray(np.uint8(src_image), 'RGBA'), (0, 0))
 
         domain_fix_list = tf.constant([idx for idx in range(self.num_domains)])
 
@@ -462,7 +461,7 @@ class StarGAN_v2():
 
                 col_image = x_fake[0]
 
-                canvas.paste(PIL.Image.fromarray(np.uint8(col_image), 'RGB'), ((col + 1) * self.img_size + 10, row * self.img_size))
+                canvas.paste(PIL.Image.fromarray(np.uint8(col_image), 'RGBA'), ((col + 1) * self.img_size + 10, row * self.img_size))
 
         canvas.save(path)
 
@@ -520,7 +519,7 @@ class StarGAN_v2():
                         ref_img = tf.concat([ref_img, ref_img_], axis=0)
                         ref_img_domain = tf.concat([ref_img_domain, ref_img_domain_], axis=0)
 
-                save_path = './{}/ref_all.jpg'.format(self.result_dir)
+                save_path = './{}/ref_all.png'.format(self.result_dir)
 
                 self.refer_canvas(src_img, ref_img, ref_img_domain, save_path,
                                   img_num=[len(source_images), len(reference_images)])
@@ -568,7 +567,7 @@ class StarGAN_v2():
                                     if ref_size == merge_size:
                                         ref_size = 0
 
-                                        save_path = './{}/ref_{}_{}.jpg'.format(self.result_dir, src_idx + 1, ref_idx + 1)
+                                        save_path = './{}/ref_{}_{}.png'.format(self.result_dir, src_idx + 1, ref_idx + 1)
 
                                         self.refer_canvas(src_img, ref_img, ref_img_domain, save_path,
                                                           img_num=merge_size)

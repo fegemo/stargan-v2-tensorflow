@@ -8,6 +8,10 @@ http://creativecommons.org/licenses/by-nc/4.0/ or send a letter to
 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 """
 
+# TO MAKE IT IGNORE THE GPU, UNCOMMENT NEXT 2 LINES
+# import os
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 from StarGAN_v2 import StarGAN_v2
 import argparse
 from utils import *

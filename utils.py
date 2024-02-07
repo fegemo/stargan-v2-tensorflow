@@ -35,12 +35,14 @@ class Image_data:
     def image_processing(self, filename, filename2, domain):
 
         x = tf.io.read_file(filename)
-        x_decode = tf.image.decode_jpeg(x, channels=self.channels, dct_method='INTEGER_ACCURATE')
+        x_decode = tf.image.decode_png(x, channels=self.channels)
+        # x_decode = tf.image.decode_jpeg(x, channels=self.channels, dct_method='INTEGER_ACCURATE')
         img = tf.image.resize(x_decode, [self.img_height, self.img_width])
         img = preprocess_fit_train_image(img)
 
         x = tf.io.read_file(filename2)
-        x_decode = tf.image.decode_jpeg(x, channels=self.channels, dct_method='INTEGER_ACCURATE')
+        x_decode = tf.image.decode_png(x, channels=self.channels)
+        # x_decode = tf.image.decode_jpeg(x, channels=self.channels, dct_method='INTEGER_ACCURATE')
         img2 = tf.image.resize(x_decode, [self.img_height, self.img_width])
         img2 = preprocess_fit_train_image(img2)
 
@@ -92,7 +94,8 @@ def postprocess_images(images):
 
 def load_images(image_path, img_size, img_channel):
     x = tf.io.read_file(image_path)
-    x_decode = tf.image.decode_jpeg(x, channels=img_channel, dct_method='INTEGER_ACCURATE')
+    x_decode = tf.image.decode_png(x, channels=img_channel)
+    # x_decode = tf.image.decode_jpeg(x, channels=img_channel, dct_method='INTEGER_ACCURATE')
     img = tf.image.resize(x_decode, [img_size, img_size])
     img = preprocess_fit_train_image(img)
 
